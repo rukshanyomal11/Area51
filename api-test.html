@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Frontend API Calls</title>
+</head>
+<body>
+    <h1>API Test</h1>
+    <button onclick="testWomen()">Test Women API</button>
+    <button onclick="testMen()">Test Men API</button>
+    <div id="output"></div>
+
+    <script>
+        async function testWomen() {
+            try {
+                console.log('Fetching Women products...');
+                const response = await fetch('http://localhost:5000/api/products?category=Women');
+                console.log('Response:', response);
+                const data = await response.json();
+                console.log('Women products:', data);
+                document.getElementById('output').innerHTML = '<h2>Women Products:</h2><pre>' + JSON.stringify(data, null, 2) + '</pre>';
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('output').innerHTML = '<h2>Error:</h2>' + error.message;
+            }
+        }
+
+        async function testMen() {
+            try {
+                console.log('Fetching Men products...');
+                const response = await fetch('http://localhost:5000/api/products?category=Men');
+                console.log('Response:', response);
+                const data = await response.json();
+                console.log('Men products:', data);
+                document.getElementById('output').innerHTML = '<h2>Men Products:</h2><pre>' + JSON.stringify(data, null, 2) + '</pre>';
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('output').innerHTML = '<h2>Error:</h2>' + error.message;
+            }
+        }
+    </script>
+</body>
+</html>
