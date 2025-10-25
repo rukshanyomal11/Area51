@@ -97,8 +97,8 @@ router.post('/place', verifyTokenAndGetUser, async (req, res) => {
         phone: user.phone,
         address: user.address,
         email: user.email
-      },
-      orderNumber: `ORD-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+      }
+      // orderNumber will be generated automatically by the Order model pre-save middleware
     });
 
     const savedOrder = await order.save();

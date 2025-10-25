@@ -98,9 +98,7 @@ const Navigation = () => {
           <NavLink to="/women" className={({ isActive }) => (isActive ? 'text-red-500 font-semibold' : 'hover:text-red-400')}>
             Women
           </NavLink>
-          <NavLink to="/sale" className={({ isActive }) => (isActive ? 'text-red-500 font-semibold' : 'hover:text-red-400')}>
-            Sale
-          </NavLink>
+
           {!token ? (
             <>
               <NavLink to="/login" className={({ isActive }) => (isActive ? 'text-red-500 font-semibold' : 'hover:text-red-400')}>

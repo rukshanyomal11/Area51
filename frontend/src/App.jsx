@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './index.css';
 import { Route, Routes, Navigate } from 'react-router-dom';
+import toast, { Toaster } from 'react-hot-toast';
 import HomePage from './pages/HomePage';
 import MenPage from './pages/MenPage';
 import ProductDetails from './pages/ProductDetails/';
@@ -89,12 +90,15 @@ function App() {
     <AuthProvider>
       <SocketProvider>
         <div className="min-h-screen flex flex-col">
+          <Toaster
+            position="top-center"
+            reverseOrder={false}
+          />
           <main className="flex-grow">
             <Routes>
               <Route path="/" element={<HomePage />} />
               <Route path="/men" element={<MenPage />} />
               <Route path="/women" element={<WomenPage />} />
-              <Route path="/sale" element={<HomePage />} /> {/* Placeholder for Sale page */}
               <Route path="/product/:id" element={<ProductDetails />} />
               <Route path="/cart" element={<CartPage />} />
               <Route path="/login" element={<LoginPage />} />

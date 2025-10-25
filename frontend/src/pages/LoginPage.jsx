@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import Navigation from '../components/Navigation';
 import Footer from '../components/Footer';
 
@@ -123,7 +124,7 @@ const LoginPage = () => {
         // Restore user's cart after successful login
         await restoreUserCart(data.token);
         
-        alert('Login successful! Your cart has been restored.');
+        toast.success('Login successful! Your cart has been restored.');
         navigate(returnTo);
       } else {
         if (data.message === 'Invalid email or password') {

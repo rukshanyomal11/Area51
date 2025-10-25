@@ -88,6 +88,38 @@ const AdminRequests = () => {
       {token && <AdminSidebar />}
       <div className={`${token ? 'ml-64' : ''}`}>
         <div className="p-6">
+
+          {/* Summary Statistics */}
+          {requests.length > 0 && (
+            <div className="mt-8 grid grid-cols-1 md:grid-cols-4 gap-6">
+              <div className="bg-white p-6 rounded-lg shadow-md">
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">Total Requests</h3>
+                <p className="text-3xl font-bold text-blue-600">{requests.length}</p>
+              </div>
+              
+              <div className="bg-white p-6 rounded-lg shadow-md">
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">Pending</h3>
+                <p className="text-3xl font-bold text-yellow-600">
+                  {requests.filter(r => r.status === 'pending').length}
+                </p>
+              </div>
+              
+              <div className="bg-white p-6 rounded-lg shadow-md">
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">Approved</h3>
+                <p className="text-3xl font-bold text-green-600">
+                  {requests.filter(r => r.status === 'approved').length}
+                </p>
+              </div>
+              
+              <div className="bg-white p-6 rounded-lg shadow-md">
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">Total Revenue</h3>
+                <p className="text-3xl font-bold text-purple-600">
+                  ${requests.reduce((sum, request) => sum + request.total, 0).toFixed(2)}
+                </p>
+              </div>
+            </div>
+          )}
+          
           <h1 className="text-2xl font-bold mb-6">User Checkout Requests</h1>
           
           <div className="bg-white rounded-lg shadow-md overflow-hidden">
@@ -225,36 +257,6 @@ const AdminRequests = () => {
             </div>
           )}
 
-          {/* Summary Statistics */}
-          {requests.length > 0 && (
-            <div className="mt-8 grid grid-cols-1 md:grid-cols-4 gap-6">
-              <div className="bg-white p-6 rounded-lg shadow-md">
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Total Requests</h3>
-                <p className="text-3xl font-bold text-blue-600">{requests.length}</p>
-              </div>
-              
-              <div className="bg-white p-6 rounded-lg shadow-md">
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Pending</h3>
-                <p className="text-3xl font-bold text-yellow-600">
-                  {requests.filter(r => r.status === 'pending').length}
-                </p>
-              </div>
-              
-              <div className="bg-white p-6 rounded-lg shadow-md">
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Approved</h3>
-                <p className="text-3xl font-bold text-green-600">
-                  {requests.filter(r => r.status === 'approved').length}
-                </p>
-              </div>
-              
-              <div className="bg-white p-6 rounded-lg shadow-md">
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Total Revenue</h3>
-                <p className="text-3xl font-bold text-purple-600">
-                  ${requests.reduce((sum, request) => sum + request.total, 0).toFixed(2)}
-                </p>
-              </div>
-            </div>
-          )}
         </div>
       </div>
     </div>

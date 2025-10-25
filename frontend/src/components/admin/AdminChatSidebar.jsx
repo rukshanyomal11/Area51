@@ -52,11 +52,25 @@ const AdminChatSidebar = ({ isOpen, onClose }) => {
   };
 
   const handleSelectChat = async (chat) => {
-    setSelectedChat(chat);
-    
-    // Mark as read
     try {
       const token = localStorage.getItem('token');
+      
+      // Fetch the complete chat data with all messages
+      const chatResponse = await fetch(`http://localhost:5000/api/chat/${chat._id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      
+      if (chatResponse.ok) {
+        const completeChat = await chatResponse.json();
+        setSelectedChat(completeChat);
+      } else {
+        console.error('Failed to fetch chat details');
+        setSelectedChat(chat); // Fallback to original chat data
+      }
+      
+      // Mark as read
       await fetch(`http://localhost:5000/api/chat/${chat._id}/read`, {
         method: 'PUT',
         headers: {
@@ -75,7 +89,8 @@ const AdminChatSidebar = ({ isOpen, onClose }) => {
       
       fetchChats();
     } catch (error) {
-      console.error('Error marking as read:', error);
+      console.error('Error selecting chat:', error);
+      setSelectedChat(chat); // Fallback to original chat data
     }
   };
 
@@ -97,11 +112,13 @@ const AdminChatSidebar = ({ isOpen, onClose }) => {
       {/* Sidebar Overlay */}
       <div 
         className="fixed inset-0 bg-black bg-opacity-50 z-40"
-        onClick={onClose}
+        onClick={selectedChat ? () => {} : onClose}
       />
 
-      {/* Sidebar */}
-      <div className="fixed right-0 top-0 h-full w-96 bg-white shadow-2xl z-50 flex flex-col">
+      {/* Main Chat Container */}
+      <div className="fixed inset-0 z-50 flex">
+        {/* Sidebar */}
+        <div className="w-96 bg-white shadow-2xl flex flex-col border-r border-gray-200">
         {/* Header */}
         <div className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white p-4 flex justify-between items-center">
           <div>
@@ -139,7 +156,11 @@ const AdminChatSidebar = ({ isOpen, onClose }) => {
                 <div
                   key={chat._id}
                   onClick={() => handleSelectChat(chat)}
-                  className="p-4 hover:bg-gray-50 cursor-pointer transition-colors"
+                  className={`p-4 hover:bg-gray-50 cursor-pointer transition-colors ${
+                    selectedChat?._id === chat._id 
+                      ? 'bg-blue-50 border-r-4 border-blue-500' 
+                      : ''
+                  }`}
                 >
                   <div className="flex justify-between items-start mb-2">
                     <div className="flex items-center">
@@ -158,11 +179,7 @@ const AdminChatSidebar = ({ isOpen, onClose }) => {
                     )}
                   </div>
                   
-                  {chat.productName && (
-                    <p className="text-sm text-gray-600 mb-2">
-                      <span className="font-medium">Product:</span> {chat.productName}
-                    </p>
-                  )}
+
                   
                   {chat.messages && chat.messages.length > 0 && (
                     <p className="text-sm text-gray-500 truncate">
@@ -188,19 +205,46 @@ const AdminChatSidebar = ({ isOpen, onClose }) => {
             🔄 Refresh Chats
           </button>
         </div>
-      </div>
+        </div>
 
-      {/* Chat Box Modal */}
-      {selectedChat && (
-        <ChatBox
-          chat={selectedChat}
-          onClose={() => {
-            setSelectedChat(null);
-            fetchChats();
-          }}
-          currentUser={getCurrentUser()}
-        />
-      )}
+        {/* Main Chat Area */}
+        <div className="flex-1 bg-gray-50">
+          {selectedChat ? (
+            <ChatBox
+              key={selectedChat._id}
+              chat={selectedChat}
+              currentUser={getCurrentUser()}
+              onClose={() => {
+                setSelectedChat(null);
+                fetchChats();
+              }}
+              isEmbedded={true}
+            />
+          ) : (
+            <div className="w-full h-full flex flex-col items-center justify-center text-gray-400 p-8 border-l border-gray-200 bg-white">
+              <svg className="w-24 h-24 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+              </svg>
+              <h2 className="text-2xl font-semibold mb-2 text-gray-600">Select a chat to start messaging</h2>
+              <p className="text-lg">Choose a conversation from the left panel</p>
+              <div className="mt-6 text-sm text-gray-500">
+                <p>💬 Customer support at your fingertips</p>
+                <p className="mt-2">Select any chat to view messages and respond to customers</p>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Close Button for the entire interface */}
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full p-2 transition-all z-10"
+        >
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
     </>
   );
 };

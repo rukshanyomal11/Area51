@@ -94,12 +94,24 @@ const orderSchema = new mongoose.Schema({
   }
 });
 
-// Generate unique order number
+// Generate unique sequential order number
 orderSchema.pre('save', async function(next) {
   if (!this.orderNumber) {
-    const timestamp = Date.now().toString();
-    const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
-    this.orderNumber = `ORD-${timestamp}-${random}`;
+    try {
+      const Counter = require('./Counter');
+      const counter = await Counter.findByIdAndUpdate(
+        'orderNumber',
+        { $inc: { seq: 1 } },
+        { new: true, upsert: true }
+      );
+      this.orderNumber = `ORD${counter.seq.toString().padStart(6, '0')}`;
+    } catch (error) {
+      console.error('Error generating order number:', error);
+      // Fallback to timestamp-based if counter fails
+      const timestamp = Date.now().toString();
+      const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+      this.orderNumber = `ORD-${timestamp}-${random}`;
+    }
   }
   next();
 });

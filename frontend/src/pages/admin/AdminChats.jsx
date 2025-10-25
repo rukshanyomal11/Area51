@@ -63,11 +63,25 @@ const AdminChats = () => {
   };
 
   const handleSelectChat = async (chat) => {
-    setSelectedChat(chat);
-    
-    // Mark as read
     try {
       const token = localStorage.getItem('token');
+      
+      // Fetch the complete chat data with all messages
+      const chatResponse = await fetch(`http://localhost:5000/api/chat/${chat._id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      
+      if (chatResponse.ok) {
+        const completeChat = await chatResponse.json();
+        setSelectedChat(completeChat);
+      } else {
+        console.error('Failed to fetch chat details');
+        setSelectedChat(chat); // Fallback to original chat data
+      }
+      
+      // Mark as read
       await fetch(`http://localhost:5000/api/chat/${chat._id}/read`, {
         method: 'PUT',
         headers: {
@@ -80,7 +94,8 @@ const AdminChats = () => {
       // Refresh chat list
       fetchChats();
     } catch (error) {
-      console.error('Error marking chat as read:', error);
+      console.error('Error selecting chat:', error);
+      setSelectedChat(chat); // Fallback to original chat data
     }
   };
 
@@ -229,23 +244,27 @@ const AdminChats = () => {
         </div>
 
         {/* Right Panel - Chat Window */}
-        <div className="flex-1 flex items-center justify-center bg-gray-50">
+        <div className="flex-1 bg-gray-50">
           {selectedChat && adminUser ? (
-            <div className="w-full h-full">
-              <ChatBox
-                chat={selectedChat}
-                currentUser={adminUser}
-                onClose={() => setSelectedChat(null)}
-                onCloseChat={handleCloseChat}
-              />
-            </div>
+            <ChatBox
+              key={selectedChat._id}
+              chat={selectedChat}
+              currentUser={adminUser}
+              onClose={() => setSelectedChat(null)}
+              onCloseChat={handleCloseChat}
+              isEmbedded={true}
+            />
           ) : (
-            <div className="text-center text-gray-400">
+            <div className="w-full h-full flex flex-col items-center justify-center text-gray-400 bg-white border-l border-gray-200">
               <svg className="w-24 h-24 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
               </svg>
               <p className="text-xl font-medium mb-2">Select a chat to start messaging</p>
               <p className="text-sm">Choose a conversation from the left panel</p>
+              <div className="mt-6 text-sm text-gray-500">
+                <p>💬 Customer support dashboard</p>
+                <p className="mt-2">Click on any chat to view and respond to messages</p>
+              </div>
             </div>
           )}
         </div>

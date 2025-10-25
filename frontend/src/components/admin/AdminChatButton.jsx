@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import AdminChatSidebar from './AdminChatSidebar';
+import { useNavigate } from 'react-router-dom';
 
 const AdminChatButton = () => {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const navigate = useNavigate();
   const [unreadCount, setUnreadCount] = useState(0);
 
   useEffect(() => {
@@ -33,13 +33,17 @@ const AdminChatButton = () => {
     }
   };
 
+  const handleChatClick = () => {
+    navigate('/admin/chats');
+  };
+
   return (
     <>
       {/* Floating Chat Button */}
       <button
-        onClick={() => setIsSidebarOpen(true)}
+        onClick={handleChatClick}
         className="fixed bottom-8 right-8 w-16 h-16 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-full shadow-2xl hover:shadow-3xl transform hover:scale-110 transition-all duration-300 z-40 flex items-center justify-center"
-        title="Open customer chats"
+        title="Go to customer chats"
       >
         <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
@@ -53,14 +57,6 @@ const AdminChatButton = () => {
         )}
       </button>
 
-      {/* Sidebar */}
-      <AdminChatSidebar
-        isOpen={isSidebarOpen}
-        onClose={() => {
-          setIsSidebarOpen(false);
-          fetchUnreadCount();
-        }}
-      />
     </>
   );
 };

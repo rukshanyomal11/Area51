@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import Navigation from '../components/Navigation';
 import ColorSelector from '../components/women/ColorSelector';
 import ErrorBoundary from '../components/ErrorBoundary';
@@ -48,7 +49,7 @@ const ProductDetail = () => {
 
   const handleAddToCart = async () => {
     if (!selectedSize || !selectedLength || !selectedColor) {
-      alert('Please select Size, Length, and Color before adding to cart.');
+      toast.error('Please select Size, Length, and Color before adding to cart.');
       return;
     }
 
@@ -87,7 +88,7 @@ const ProductDetail = () => {
           updateLocalStorage(newItem);
           
           // Show success message and navigate
-          alert(`Added to cart: ${newItem.title}`);
+          toast.success(`Added to cart: ${newItem.title}`);
           navigate('/cart'); // Navigate to cart page
           
         } else {
@@ -98,14 +99,14 @@ const ProductDetail = () => {
       } else {
         // User not logged in - add to localStorage only
         updateLocalStorage(newItem);
-        alert(`Added to cart: ${newItem.title} (Login to sync with your account)`);
+        toast.success(`Added to cart: ${newItem.title} (Login to sync with your account)`);
         navigate('/cart'); // Navigate to cart page even for guest users
       }
     } catch (error) {
       console.error('Error adding to cart:', error);
       // Fallback to localStorage
       updateLocalStorage(newItem);
-      alert(`Added to local cart: ${newItem.title} (Server error - will sync when available)`);
+      toast.success(`Added to local cart: ${newItem.title} (Server error - will sync when available)`);
       navigate('/cart'); // Still navigate to cart page
     } finally {
       setAddingToCart(false);

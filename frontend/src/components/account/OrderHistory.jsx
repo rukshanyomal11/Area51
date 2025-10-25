@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import toast from 'react-hot-toast';
 import ChatBox from '../chat/ChatBox';
 
 const OrderHistory = ({ orders }) => {
@@ -13,12 +14,12 @@ const OrderHistory = ({ orders }) => {
       const userStr = localStorage.getItem('user');
       
       if (!token) {
-        alert('Please login to use chat');
+        toast.error('Please login to use chat');
         return;
       }
       
       if (!userStr) {
-        alert('User data not found. Please login again.');
+        toast.error('User data not found. Please login again.');
         return;
       }
       
@@ -30,7 +31,7 @@ const OrderHistory = ({ orders }) => {
       const userName = user.name || user.username || user.email;
       
       if (!userId || !userName) {
-        alert('User information incomplete. Please login again.');
+        toast.error('User information incomplete. Please login again.');
         return;
       }
 
@@ -64,11 +65,11 @@ const OrderHistory = ({ orders }) => {
       } else {
         const error = await response.json();
         console.error('❌ Failed to create chat:', error);
-        alert('Failed to open chat: ' + (error.message || 'Unknown error'));
+        toast.error('Failed to open chat: ' + (error.message || 'Unknown error'));
       }
     } catch (error) {
       console.error('❌ Error opening chat:', error);
-      alert('Error opening chat: ' + error.message);
+      toast.error('Error opening chat: ' + error.message);
     }
   };
 

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import Navigation from '../components/Navigation';
 import Footer from '../components/Footer';
 
@@ -74,7 +75,7 @@ const RegisterPage = () => {
         };
         localStorage.setItem('user', JSON.stringify(userData));
         
-        alert(`Registration successful! Welcome, ${data.name}!`);
+        toast.success(`Registration successful! Welcome, ${data.name}!`);
         navigate('/'); // Navigate to home page instead of login
       } else {
         setError(data.message || 'Registration failed');

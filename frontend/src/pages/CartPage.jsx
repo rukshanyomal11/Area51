@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import Navigation from '../components/Navigation';
 import Footer from '../components/Footer';
 import { placeOrder } from '../services/orderService';
@@ -131,7 +132,7 @@ const CartPage = () => {
 
   const handlePlaceOrder = async () => {
     if (selectedItems.size === 0) {
-      alert('Please select at least one item to place an order.');
+      toast.error('Please select at least one item to place an order.');
       return;
     }
 
@@ -139,7 +140,7 @@ const CartPage = () => {
     try {
       const token = localStorage.getItem('token');
       if (!token) {
-        alert('Please log in to place your order.');
+        toast.error('Please log in to place your order.');
         navigate('/login?returnTo=/cart');
         return;
       }
@@ -176,16 +177,16 @@ const CartPage = () => {
       localStorage.setItem('cart', JSON.stringify(remainingCart));
       setSelectedItems(new Set());
 
-      alert('Order placed successfully! Your order has been submitted and is now being processed.');
+      toast.success('Order placed successfully! Your order has been submitted and is now being processed.');
       navigate('/account?tab=orders');
       
     } catch (err) {
       console.error('Order placement error:', err);
       if (err.message && err.message.includes('User profile incomplete')) {
-        alert('Please complete your profile with name, phone, and address before placing an order.');
+        toast.error('Please complete your profile with name, phone, and address before placing an order.');
         navigate('/account?tab=profile');
       } else {
-        alert(err.message || 'Error placing order. Please try again.');
+        toast.error(err.message || 'Error placing order. Please try again.');
       }
     } finally {
       setIsPlacingOrder(false);
