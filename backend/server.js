@@ -12,10 +12,7 @@ dotenv.config({ path: path.join(__dirname, '.env') });
 // Connect to MongoDB Atlas
 const connectDB = async () => {
   try {
-    const conn = await mongoose.connect(process.env.MONGO_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
+    const conn = await mongoose.connect(process.env.MONGO_URI);
     console.log(`MongoDB Connected: ${conn.connection.host}`);
   } catch (error) {
     console.error(`Error: ${error.message}`);
@@ -47,6 +44,7 @@ app.use('/api/orders', require('./routes/orders-enhanced'));
 app.use('/api/users', require('./routes/user'));
 app.use('/api/debug', require('./routes/debug'));
 app.use('/api/chat', require('./routes/chat'));
+app.use('/api/ai-chat', require('./routes/aiChat'));
 
 // Socket.IO for real-time chat
 const activeUsers = new Map(); // Store userId -> socketId mapping

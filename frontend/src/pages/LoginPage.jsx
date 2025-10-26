@@ -1,12 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import Navigation from '../components/Navigation';
 import Footer from '../components/Footer';
+import { AuthContext } from '../context/AuthContext';
 
 const LoginPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { login, token } = useContext(AuthContext);
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
 
@@ -14,27 +16,31 @@ const LoginPage = () => {
   const returnTo = searchParams.get('returnTo') || '/';
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
+    // If user is already logged in (via AuthContext), redirect them
     if (token) {
-      // Verify token validity with the backend
-      fetch('http://localhost:5000/api/auth/users', {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-        .then((response) => {
-          if (response.ok) {
-            // Token is valid, redirect to returnTo
-            navigate(returnTo);
-          } else {
-            // Token is invalid, clear it and stay on login page
-            localStorage.removeItem('token');
-          }
-        })
-        .catch((error) => {
-          console.error('Error verifying token:', error);
-          localStorage.removeItem('token');
+      toast.success('You are already logged in! Redirecting...', {
+        duration: 2000,
+        icon: '✅',
+      });
+      setTimeout(() => {
+        navigate(returnTo);
+      }, 1000);
+    } else {
+      // Show welcome toast for new visitors
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('message') === 'login-required') {
+        toast('Please log in to continue 🔐', {
+          duration: 3000,
+          icon: '👋',
+          style: {
+            borderRadius: '10px',
+            background: '#3B82F6',
+            color: '#fff',
+          },
         });
+      }
     }
-  }, [navigate, returnTo]);
+  }, [token, navigate, returnTo]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -106,10 +112,7 @@ const LoginPage = () => {
       });
       const data = await response.json();
       if (response.ok) {
-        localStorage.setItem('token', data.token);
-        
-        // Save user data to localStorage for chat functionality
-        // Backend returns: { _id, name, email, phone, address, token }
+        // Prepare user data for AuthContext
         const userData = {
           id: data._id,
           _id: data._id,
@@ -118,14 +121,34 @@ const LoginPage = () => {
           phone: data.phone,
           address: data.address
         };
-        localStorage.setItem('user', JSON.stringify(userData));
-        console.log('✅ User data saved to localStorage:', userData);
         
+        // Use AuthContext login method to update state and localStorage
+        login(userData, data.token);
+        
+        // Show loading toast
+        const loginToast = toast.loading('Logging you in...', {
+          duration: 2000,
+        });
+
         // Restore user's cart after successful login
         await restoreUserCart(data.token);
         
-        toast.success('Login successful! Your cart has been restored.');
-        navigate(returnTo);
+        // Show success toast with user's name
+        toast.success(`Welcome back, ${userData.name}! 🎉\nYour cart has been restored.`, {
+          id: loginToast,
+          duration: 4000,
+          icon: '👋',
+          style: {
+            borderRadius: '10px',
+            background: '#10B981',
+            color: '#fff',
+          },
+        });
+        
+        // Delay redirect to show toast
+        setTimeout(() => {
+          window.location.href = returnTo === '/' ? '/' : returnTo;
+        }, 1500);
       } else {
         if (data.message === 'Invalid email or password') {
           const userExists = await fetch('http://localhost:5000/api/auth/check-email', {
@@ -135,16 +158,56 @@ const LoginPage = () => {
           });
           const checkData = await userExists.json();
           if (!checkData.exists) {
-            setError('This email is not registered. Please register or use a different email.');
+            const errorMsg = 'This email is not registered. Please register or use a different email.';
+            setError(errorMsg);
+            toast.error(errorMsg, {
+              duration: 5000,
+              icon: '❌',
+              style: {
+                borderRadius: '10px',
+                background: '#EF4444',
+                color: '#fff',
+              },
+            });
           } else {
-            setError('Invalid password. Please try again or use "Forgot Password" if needed.');
+            const errorMsg = 'Invalid password. Please try again or use "Forgot Password" if needed.';
+            setError(errorMsg);
+            toast.error(errorMsg, {
+              duration: 5000,
+              icon: '🔒',
+              style: {
+                borderRadius: '10px',
+                background: '#EF4444',
+                color: '#fff',
+              },
+            });
           }
         } else {
-          setError(data.message || 'Login failed');
+          const errorMsg = data.message || 'Login failed';
+          setError(errorMsg);
+          toast.error(errorMsg, {
+            duration: 4000,
+            icon: '⚠️',
+            style: {
+              borderRadius: '10px',
+              background: '#EF4444',
+              color: '#fff',
+            },
+          });
         }
       }
     } catch (error) {
-      setError('Server error. Please try again.');
+      const errorMsg = 'Server error. Please try again.';
+      setError(errorMsg);
+      toast.error(errorMsg, {
+        duration: 4000,
+        icon: '🔌',
+        style: {
+          borderRadius: '10px',
+          background: '#EF4444',
+          color: '#fff',
+        },
+      });
     }
   };
 

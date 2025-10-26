@@ -1,10 +1,13 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { FaShoppingCart, FaUser } from 'react-icons/fa';
+import { FaShoppingCart, FaUser, FaRobot } from 'react-icons/fa';
+import toast from 'react-hot-toast';
 import { AuthContext } from '../context/AuthContext';
+import AIChatBot from './chat/AIChatBot';
 
 const Navigation = () => {
   const [cartCount, setCartCount] = useState(0);
+  const [isAiChatOpen, setIsAiChatOpen] = useState(false);
   const navigate = useNavigate();
   const { user, token, logout: authLogout } = useContext(AuthContext);
 
@@ -60,6 +63,11 @@ const Navigation = () => {
   const handleLogout = async () => {
     if (token) {
       try {
+        // Show loading toast
+        const logoutToast = toast.loading('Logging out...', {
+          duration: 2000,
+        });
+
         // Clear cart from database on logout
         await fetch('http://localhost:5000/api/cart', {
           method: 'DELETE',
@@ -69,13 +77,31 @@ const Navigation = () => {
         // Use AuthContext logout method
         authLogout();
         setCartCount(0);
-        navigate('/login');
+        
+        // Show success toast
+        toast.success('Successfully logged out! 👋', {
+          id: logoutToast,
+          duration: 3000,
+        });
+        
+        // Delay redirect to show toast
+        setTimeout(() => {
+          window.location.href = '/login';
+        }, 1000);
       } catch (error) {
         console.error('Logout failed:', error);
+        // Show error toast but still logout
+        toast.error('Logout error, but you are logged out! 🔒', {
+          duration: 3000,
+        });
+        
         // Still logout even if there's an error
         authLogout();
         setCartCount(0);
-        navigate('/login');
+        
+        setTimeout(() => {
+          window.location.href = '/login';
+        }, 1000);
       }
     }
   };
@@ -113,6 +139,8 @@ const Navigation = () => {
               Logout
             </button>
           )}
+
+          
           <NavLink to="/cart" className={({ isActive }) => (isActive ? 'text-red-500' : 'text-gray-600 hover:text-red-400')}>
             <div className="relative">
               <FaShoppingCart className="text-xl" />
@@ -138,6 +166,65 @@ const Navigation = () => {
             </div>
           )}
         </div>
+      </div>
+      
+      {/* AI ChatBot Modal */}
+      <AIChatBot 
+        isOpen={isAiChatOpen} 
+        onClose={() => setIsAiChatOpen(false)} 
+      />
+
+      {/* Floating AI Assistant Button - Always Visible */}
+      <div className="fixed bottom-6 right-6 z-40">
+        <button
+          onClick={() => {
+            if (!token) {
+              toast('Please login to chat with AI Assistant! 🤖', {
+                duration: 3000,
+                icon: '🔐',
+                style: {
+                  borderRadius: '10px',
+                  background: '#8B5CF6',
+                  color: '#fff',
+                },
+              });
+              navigate('/login?message=login-required');
+              return;
+            }
+            setIsAiChatOpen(true);
+            toast.success('AI Shopping Assistant is ready to help! 🤖✨', {
+              duration: 2000,
+              icon: '🚀',
+              style: {
+                borderRadius: '10px',
+                background: '#8B5CF6',
+                color: '#fff',
+              },
+            });
+          }}
+          className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white w-16 h-16 rounded-full shadow-2xl transition-all duration-300 transform hover:scale-110 flex items-center justify-center relative group animate-pulse"
+          title="AI Shopping Assistant"
+        >
+          <FaRobot className="text-2xl" />
+          <span className="absolute -top-1 -right-1 bg-yellow-400 text-purple-800 text-xs rounded-full w-6 h-6 flex items-center justify-center font-bold animate-bounce">
+            ✨
+          </span>
+          
+
+          
+          {/* Tooltip */}
+          <div className="absolute bottom-full right-0 mb-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
+            <div className="bg-gray-800 text-white text-sm px-3 py-2 rounded-lg whitespace-nowrap">
+              {token ? 'Chat with AI Assistant! 🛍️' : 'Login to use AI Assistant! 🤖'}
+              <div className="absolute top-full right-4 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-800"></div>
+            </div>
+          </div>
+
+          {/* Ripple Effect */}
+          <div className="absolute inset-0 rounded-full bg-purple-400 animate-ping opacity-20"></div>
+        </button>
+
+
       </div>
     </nav>
   );

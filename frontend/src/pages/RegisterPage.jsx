@@ -75,8 +75,27 @@ const RegisterPage = () => {
         };
         localStorage.setItem('user', JSON.stringify(userData));
         
-        toast.success(`Registration successful! Welcome, ${data.name}!`);
-        navigate('/'); // Navigate to home page instead of login
+        // Show loading toast
+        const registerToast = toast.loading('Creating your account...', {
+          duration: 2000,
+        });
+
+        // Show success toast
+        toast.success(`🎉 Welcome to Area 51, ${data.name}!\nYour account has been created successfully!`, {
+          id: registerToast,
+          duration: 5000,
+          icon: '🚀',
+          style: {
+            borderRadius: '10px',
+            background: '#10B981',
+            color: '#fff',
+          },
+        });
+        
+        // Delay navigation to show toast
+        setTimeout(() => {
+          navigate('/'); // Navigate to home page instead of login
+        }, 2000);
       } else {
         setError(data.message || 'Registration failed');
       }
