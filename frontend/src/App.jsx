@@ -16,6 +16,7 @@ import AdminRequests from './pages/admin/AdminRequests';
 import AdminChats from './pages/admin/AdminChats';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import AccountPage from './pages/AccountPage';
+import ProductChatbot from './components/chatbot/ProductChatbot';
 import { AuthProvider } from './context/AuthContext';
 import { SocketProvider } from './context/SocketContext';
 
@@ -147,6 +148,8 @@ function App() {
               />
             </Routes>
           </main>
+          {/* AI Chatbot - Available on all pages */}
+          <ProductChatbot />
         </div>
       </SocketProvider>
     </AuthProvider>

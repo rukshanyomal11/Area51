@@ -68,11 +68,8 @@ const Navigation = () => {
           duration: 2000,
         });
 
-        // Clear cart from database on logout
-        await fetch('http://localhost:5000/api/cart', {
-          method: 'DELETE',
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        // DON'T clear cart from database - keep it for when user logs back in
+        // Cart should persist across login sessions
         
         // Use AuthContext logout method
         authLogout();
@@ -113,7 +110,7 @@ const Navigation = () => {
   return (
     <nav className="bg-white py-4 shadow-md">
       <div className="container mx-auto px-4 flex items-center justify-between">
-        <h1 className="text-3xl font-bold">AREA 51</h1>
+        <h1 className="text-3xl font-bold">Area 51</h1>
         <div className="absolute left-1/2 transform -translate-x-1/2 space-x-8 flex items-center">
           <NavLink to="/" className={({ isActive }) => (isActive ? 'text-red-500 font-semibold' : 'hover:text-red-400')}>
             Home

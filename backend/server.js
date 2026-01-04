@@ -45,6 +45,7 @@ app.use('/api/users', require('./routes/user'));
 app.use('/api/debug', require('./routes/debug'));
 app.use('/api/chat', require('./routes/chat'));
 app.use('/api/ai-chat', require('./routes/aiChat'));
+app.use('/api/chatbot', require('./routes/chatbot')); // n8n chatbot route
 
 // Socket.IO for real-time chat
 const activeUsers = new Map(); // Store userId -> socketId mapping

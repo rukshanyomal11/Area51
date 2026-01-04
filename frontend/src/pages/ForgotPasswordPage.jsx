@@ -1,7 +1,6 @@
 ﻿import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import Navigation from '../components/Navigation';
-import Footer from '../components/Footer';
 import { FaEnvelope, FaLock, FaCheckCircle, FaKey, FaArrowLeft, FaShieldAlt } from 'react-icons/fa';
 
 const ForgotPasswordPage = () => {
@@ -131,33 +130,48 @@ const ForgotPasswordPage = () => {
   );
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
+    <div className="min-h-screen flex flex-col bg-gray-50">
+      {/* Navigation Bar */}
       <Navigation />
-      <main className="flex-grow flex items-center justify-center px-4 py-12">
-        <div className="w-full max-w-lg">
-          <div className="bg-white/80 backdrop-blur-lg rounded-3xl shadow-2xl p-8 sm:p-12 border border-white/20">
-            <div className="flex flex-col items-center mb-6">
-              <div className="w-20 h-20 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center mb-4 shadow-lg">
-                <FaShieldAlt className="text-3xl text-white" />
+      
+      {/* Main Content with Background Image */}
+      <div className="flex-grow relative overflow-hidden">
+        {/* Background Image with Overlay */}
+        <div className="absolute inset-0 z-0">
+          <img 
+            src="/shopping.png" 
+            alt="Shopping Background" 
+            className="w-full h-full object-cover opacity-20"
+          />
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-500/30 via-purple-500/20 to-pink-500/30"></div>
+        </div>
+
+        {/* Form Overlay */}
+        <div className="relative z-10 flex items-center justify-center min-h-full px-4 py-12">
+          <div className="w-full max-w-lg">
+            <div className="bg-white/70 backdrop-blur-xl rounded-3xl shadow-2xl p-8 sm:p-12 border border-white/40">
+              <div className="flex flex-col items-center mb-6">
+                <div className="w-20 h-20 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center mb-4 shadow-lg">
+                  <FaShieldAlt className="text-3xl text-white" />
+                </div>
+                <h2 className="text-3xl font-bold text-center bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                  {step === 1 ? 'Forgot Password?' : step === 2 ? 'Verify Your Identity' : 'Create New Password'}
+                </h2>
+                <p className="text-gray-700 text-center mt-2 text-sm font-medium">
+                  {step === 1 && "Don't worry! We'll send you a code to reset it."}
+                  {step === 2 && "Enter the 6-digit code sent to your email."}
+                  {step === 3 && "Choose a strong password for your account."}
+                </p>
               </div>
-              <h2 className="text-3xl font-bold text-center bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                {step === 1 ? 'Forgot Password?' : step === 2 ? 'Verify Your Identity' : 'Create New Password'}
-              </h2>
-              <p className="text-gray-600 text-center mt-2 text-sm">
-                {step === 1 && "Don't worry! We'll send you a code to reset it."}
-                {step === 2 && "Enter the 6-digit code sent to your email."}
-                {step === 3 && "Choose a strong password for your account."}
-              </p>
-            </div>
             {renderProgressSteps()}
             {success && (
-              <div className="bg-green-100 border-l-4 border-green-500 text-green-700 px-4 py-3 rounded-lg mb-6 flex items-center animate-fade-in">
+              <div className="bg-green-100/90 backdrop-blur-sm border-l-4 border-green-500 text-green-700 px-4 py-3 rounded-lg mb-6 flex items-center animate-fade-in">
                 <FaCheckCircle className="mr-3 text-xl" />
                 <span>{success}</span>
               </div>
             )}
             {error && (
-              <div className="bg-red-100 border-l-4 border-red-500 text-red-700 px-4 py-3 rounded-lg mb-6 animate-shake">
+              <div className="bg-red-100/90 backdrop-blur-sm border-l-4 border-red-500 text-red-700 px-4 py-3 rounded-lg mb-6 animate-shake">
                 {error}
               </div>
             )}
@@ -316,10 +330,10 @@ const ForgotPasswordPage = () => {
                 </button>
               </form>
             )}
-            <div className="mt-8 pt-6 border-t border-gray-200">
+            <div className="mt-8 pt-6 border-t border-gray-300/50">
               <Link
                 to="/login"
-                className="flex items-center justify-center text-sm text-gray-600 hover:text-blue-600 font-medium transition-colors duration-300 group"
+                className="flex items-center justify-center text-sm text-gray-700 hover:text-blue-600 font-medium transition-colors duration-300 group"
               >
                 <FaArrowLeft className="mr-2 group-hover:-translate-x-1 transition-transform duration-300" />
                 Back to Login
@@ -327,13 +341,13 @@ const ForgotPasswordPage = () => {
             </div>
           </div>
           <div className="mt-6 text-center">
-            <p className="text-xs text-gray-500">
-               Your security is our priority. All communications are encrypted.
+            <p className="text-xs text-gray-600 font-medium bg-white/50 backdrop-blur-sm px-4 py-2 rounded-full inline-block">
+              🔒 Your security is our priority. All communications are encrypted.
             </p>
           </div>
         </div>
-      </main>
-      <Footer />
+      </div>
+      </div>
     </div>
   );
 };

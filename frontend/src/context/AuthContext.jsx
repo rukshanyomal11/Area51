@@ -53,8 +53,8 @@ export const AuthProvider = ({ children }) => {
     setToken(null);
     localStorage.removeItem('token');
     localStorage.removeItem('user'); // Clear user data on logout
-    localStorage.removeItem('cart'); // Clear cart on logout
-    console.log('✅ AuthContext: User logged out');
+    localStorage.removeItem('cart'); // Clear LOCAL cart only (database cart persists)
+    console.log('✅ AuthContext: User logged out (cart saved in database)');
   };
 
   const value = {

@@ -22,8 +22,21 @@ const CartPage = () => {
           });
           const data = await response.json();
           if (response.ok) {
-            setCartItems(data.items || []);
-            localStorage.removeItem('cart'); // Clear local storage if backend loads successfully
+            // Normalize cart items from database to ensure correct format
+            const normalizedItems = (data.items || []).map(item => ({
+              productId: item.productId,
+              title: item.title,
+              price: item.price,
+              imageSrc: item.imageSrc,
+              size: item.size,
+              length: item.length,
+              color: item.color,
+              quantity: item.quantity,
+            }));
+            setCartItems(normalizedItems);
+            
+            // Update localStorage with normalized items
+            localStorage.setItem('cart', JSON.stringify(normalizedItems));
           } else {
             throw new Error(data.message || 'Failed to fetch cart');
           }

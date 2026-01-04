@@ -135,6 +135,38 @@ router.get('/', verifyTokenAndGetUser, async (req, res) => {
   }
 });
 
+// Replace entire cart (for syncing from frontend)
+router.put('/', verifyTokenAndGetUser, async (req, res) => {
+  try {
+    const userId = req.userId;
+    const { items } = req.body;
+
+    let cart = await Cart.findOne({ userId });
+    if (!cart) {
+      cart = new Cart({ userId, items: [] });
+    }
+
+    // Replace all items with the new items from frontend
+    cart.items = items.map(item => ({
+      productId: item.productId,
+      title: item.title,
+      price: parseFloat(item.price),
+      imageSrc: item.imageSrc,
+      size: item.size,
+      length: item.length,
+      color: item.color,
+      quantity: parseInt(item.quantity),
+    }));
+
+    cart.updatedAt = Date.now();
+    const savedCart = await cart.save();
+
+    res.status(200).json({ message: 'Cart updated successfully', cart: savedCart });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 // Update item quantity in cart
 router.put('/item/:productId', verifyTokenAndGetUser, async (req, res) => {
   try {
