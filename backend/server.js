@@ -20,6 +20,7 @@ const connectDB = async () => {
   }
 };
 
+
 connectDB();
 
 const app = express();
